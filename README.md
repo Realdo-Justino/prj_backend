@@ -10,6 +10,12 @@ Ao permitir que usuarios possam criar tarefas, completalas e organizar o histori
 
 <br>
 
+## Tecnologias usadas
+* Java
+* Spring Boot
+
+<br>
+
 ## Banco de Dados
 ![DbImage](https://github.com/Realdo-Justino/prj_backend/blob/readme/Assests/db_diagram.PNG)
 
