@@ -2,6 +2,7 @@ package com.example.tarefas.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +22,6 @@ public class Usuario {
     private String sobrenome;
     private String senha;
     private String email;
-    private LocalDate data_criacao;
+    private LocalDate dataCriacao;
     private Boolean ativo;
 }
