@@ -4,6 +4,7 @@ import com.example.tarefas.controller.usuario.dto.UsuarioDto;
 import com.example.tarefas.model.Usuario;
 import com.example.tarefas.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,22 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Transactional
     public List<Usuario> findAll() { return usuarioRepository.findAll(); }
 
+    @Transactional
     public Usuario findById(long id) {
         Optional<Usuario> user = usuarioRepository.findById(id);
+        if(user.isPresent()) {
+            return user.get();
+        }
+
+        throw new EntityNotFoundException("Usuario nao encontrado");
+    }
+
+    @Transactional
+    public Usuario findByEmail(String email) {
+        Optional<Usuario> user = usuarioRepository.findByEmail(email);
         if(user.isPresent()) {
             return user.get();
         }
