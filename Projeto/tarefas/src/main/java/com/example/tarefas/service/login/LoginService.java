@@ -16,7 +16,7 @@ public class LoginService {
     public void validate(LoginDto loginDto) {
         Usuario usuario = usuarioService.findByEmail(loginDto.email());
 
-        if(usuario.getSenha() != loginDto.senha()) {
+        if(!usuario.getSenha().equals(loginDto.senha())) {
             throw new EntityNotFoundException("Usuario/Senha invalido");
         }
     }
