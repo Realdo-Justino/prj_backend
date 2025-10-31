@@ -1,6 +1,7 @@
 package com.example.tarefas.service.usuario;
 
 import com.example.tarefas.controller.usuario.dto.UsuarioDto;
+import com.example.tarefas.exceptions.BadRequestException;
 import com.example.tarefas.model.Usuario;
 import com.example.tarefas.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -42,6 +43,13 @@ public class UsuarioService {
     }
 
     public Usuario create(UsuarioDto usuarioDto) {
+        try {
+            findByEmail(usuarioDto.email());
+
+            throw new BadRequestException("Email ja em uso");
+        } catch(EntityNotFoundException entityNotFoundException) {
+        }
+
         Usuario usuario = Usuario.builder()
                 .nome(usuarioDto.nome())
                 .sobrenome(usuarioDto.sobrenome())
