@@ -43,4 +43,12 @@ public class TarefaController {
         tarefaService.delete(id);
         return ResponseEntity.ok("Tarefa deletada com sucesso");
     }
+
+    @PatchMapping("/alternar-conclusao/{id}")
+    public ResponseEntity<Tarefa> alternarConclusao(@PathVariable Long id) {
+        return ResponseEntity.ok(tarefaService.alternarConclusao(id));
+    }
+
+
+
 }

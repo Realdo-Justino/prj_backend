@@ -47,6 +47,7 @@ public class TarefaService {
                 .titulo(tarefaDto.titulo())
                 .descricao(tarefaDto.descricao())
                 .usuario_criado(usuario)
+                .concluido(false)
                 .build();
 
         return tarefaRepository.save(tarefa);
@@ -68,8 +69,15 @@ public class TarefaService {
         return tarefaRepository.save(tarefaAtualizada);
     }
 
+    public Tarefa alternarConclusao(Long id) {
+        Tarefa tarefa = findById(id);
+        tarefa.setConcluido(!Boolean.TRUE.equals(tarefa.getConcluido()));
+        return tarefaRepository.save(tarefa);
+    }
+
+
     public void delete(Long id) {
-        findById(id); // garante que a tarefa existe, senão lança exceção
+        findById(id);
         tarefaRepository.deleteById(id);
     }
 

@@ -21,7 +21,10 @@ public class Tarefa {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario_criado;
 
+    private Integer categoria;
+
     private String titulo = "";
     private String descricao = "";
-    private Integer categoria;
+    private Boolean concluido;
+
 }
