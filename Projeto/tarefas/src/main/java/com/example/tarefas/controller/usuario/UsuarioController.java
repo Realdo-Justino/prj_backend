@@ -1,5 +1,6 @@
 package com.example.tarefas.controller.usuario;
 
+import com.example.tarefas.controller.usuario.dto.PatchUsuarioDto;
 import com.example.tarefas.controller.usuario.dto.UsuarioDto;
 import com.example.tarefas.model.Usuario;
 import com.example.tarefas.service.usuario.UsuarioService;
@@ -39,13 +40,10 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.update(userId, usuarioDto));
     }
 
-    @PatchMapping("/activate/{userId}")
-    public ResponseEntity<Usuario> activateUsuario(@PathVariable Long userId) {
-        return ResponseEntity.ok(usuarioService.activate(userId));
-    }
+    @PatchMapping("/{userId}")
+    public ResponseEntity<Usuario> activateUsuario(@PathVariable Long userId, @Valid @RequestBody PatchUsuarioDto patchUsuarioDto) {
+        if(patchUsuarioDto.ativo()) return ResponseEntity.ok(usuarioService.activate(userId));
 
-    @PatchMapping("/deactivate/{userId}")
-    public ResponseEntity<Usuario> deactivateUsuario(@PathVariable Long userId) {
         return ResponseEntity.ok(usuarioService.deActivate(userId));
     }
 
