@@ -1,8 +1,10 @@
 package com.example.tarefas.controller.usuario;
 
+import com.example.tarefas.controller.usuario.dto.PatchUsuarioDto;
 import com.example.tarefas.controller.usuario.dto.UsuarioDto;
 import com.example.tarefas.model.Usuario;
 import com.example.tarefas.service.usuario.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,22 +31,19 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> createUsuario(@RequestBody UsuarioDto usuarioDto) {
+    public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody UsuarioDto usuarioDto) {
         return ResponseEntity.ok(usuarioService.create(usuarioDto));
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long userId, @RequestBody UsuarioDto usuarioDto) {
+    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long userId, @Valid @RequestBody UsuarioDto usuarioDto) {
         return ResponseEntity.ok(usuarioService.update(userId, usuarioDto));
     }
 
-    @PatchMapping("/activate/{userId}")
-    public ResponseEntity<Usuario> activateUsuario(@PathVariable Long userId) {
-        return ResponseEntity.ok(usuarioService.activate(userId));
-    }
+    @PatchMapping("/{userId}")
+    public ResponseEntity<Usuario> activateUsuario(@PathVariable Long userId, @Valid @RequestBody PatchUsuarioDto patchUsuarioDto) {
+        if(patchUsuarioDto.ativo()) return ResponseEntity.ok(usuarioService.activate(userId));
 
-    @PatchMapping("/deactivate/{userId}")
-    public ResponseEntity<Usuario> deactivateUsuario(@PathVariable Long userId) {
         return ResponseEntity.ok(usuarioService.deActivate(userId));
     }
 
