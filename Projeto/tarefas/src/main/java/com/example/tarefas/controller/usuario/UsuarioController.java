@@ -5,14 +5,20 @@ import com.example.tarefas.controller.usuario.dto.UsuarioDto;
 import com.example.tarefas.model.Usuario;
 import com.example.tarefas.service.usuario.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Usuarios")
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
@@ -34,8 +40,18 @@ public class UsuarioController {
 
     @Operation(summary = "Pesquisar usuario", description = "Pesquisa o usuario por id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro")
+        @ApiResponse(responseCode = "200", description = "Sucesso"),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Erro",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                    value = "{ \"error\": \"Usuario nao encontrado\" }"
+                )
+            )
+        )
     })
     @GetMapping("/{userId}")
     public ResponseEntity<Usuario> getAllUsuarios(@PathVariable Long userId) {
@@ -44,8 +60,18 @@ public class UsuarioController {
 
     @Operation(summary = "Criar usuario", description = "Cria um novo usuario")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usuario Criado"),
-            @ApiResponse(responseCode = "400", description = "Erro")
+        @ApiResponse(responseCode = "200", description = "Usuario Criado"),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Erro",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                    value = "{ \"error\": \"Email ja em uso\" }"
+                )
+            )
+        )
     })
     @PostMapping
     public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody UsuarioDto usuarioDto) {
@@ -54,8 +80,18 @@ public class UsuarioController {
 
     @Operation(summary = "Atualizar usuario", description = "Atualiza o usuario por id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro")
+        @ApiResponse(responseCode = "200", description = "Sucesso"),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Erro",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                    value = "{ \"error\": \"Usuario nao encontrado\" }"
+                )
+            )
+        )
     })
     @PutMapping("/{userId}")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable Long userId, @Valid @RequestBody UsuarioDto usuarioDto) {
@@ -64,8 +100,18 @@ public class UsuarioController {
 
     @Operation(summary = "Ativar/Desativar usuario", description = "Ativa/Desativa o usuario por id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro")
+        @ApiResponse(responseCode = "200", description = "Sucesso"),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Erro",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                    value = "{ \"error\": \"Usuario nao encontrado\" }"
+                )
+            )
+        )
     })
     @PatchMapping("/{userId}")
     public ResponseEntity<Usuario> activateUsuario(@PathVariable Long userId, @Valid @RequestBody PatchUsuarioDto patchUsuarioDto) {
@@ -76,8 +122,25 @@ public class UsuarioController {
 
     @Operation(summary = "Deletar usuario", description = "Deleta o usuario por id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro")
+        @ApiResponse(
+            responseCode = "200",
+            description = "Sucesso",
+            content = @Content(
+                mediaType = "text/plain",
+                schema = @Schema(type = "string", example = "Deletado com sucesso")
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Erro",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                    value = "{ \"error\": \"Usuario nao encontrado\" }"
+                )
+            )
+        )
     })
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUsuario(@PathVariable Long userId) {
