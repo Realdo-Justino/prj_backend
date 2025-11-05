@@ -4,6 +4,9 @@ import com.example.tarefas.controller.usuario.dto.PatchUsuarioDto;
 import com.example.tarefas.controller.usuario.dto.UsuarioDto;
 import com.example.tarefas.model.Usuario;
 import com.example.tarefas.service.usuario.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +33,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.findById(userId));
     }
 
+    @Operation(summary = "Create a user", description = "Creates a new application user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User created"),
+            @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
     @PostMapping
     public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody UsuarioDto usuarioDto) {
         return ResponseEntity.ok(usuarioService.create(usuarioDto));
