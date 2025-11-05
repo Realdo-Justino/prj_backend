@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -23,31 +23,50 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    @Operation(summary = "Pesquisar usuarios", description = "Pesquisa todos os usarios")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuarios"),
+    })
     @GetMapping
     public ResponseEntity<List<Usuario>> getAllUsuarios() {
         return ResponseEntity.ok(usuarioService.findAll());
     }
 
+    @Operation(summary = "Pesquisar usuario", description = "Pesquisa o usuario por id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro")
+    })
     @GetMapping("/{userId}")
     public ResponseEntity<Usuario> getAllUsuarios(@PathVariable Long userId) {
         return ResponseEntity.ok(usuarioService.findById(userId));
     }
 
-    @Operation(summary = "Create a user", description = "Creates a new application user")
+    @Operation(summary = "Criar usuario", description = "Cria um novo usuario")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User created"),
-            @ApiResponse(responseCode = "400", description = "Invalid input")
+            @ApiResponse(responseCode = "200", description = "Usuario Criado"),
+            @ApiResponse(responseCode = "400", description = "Erro")
     })
     @PostMapping
     public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody UsuarioDto usuarioDto) {
         return ResponseEntity.ok(usuarioService.create(usuarioDto));
     }
 
+    @Operation(summary = "Atualizar usuario", description = "Atualiza o usuario por id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro")
+    })
     @PutMapping("/{userId}")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable Long userId, @Valid @RequestBody UsuarioDto usuarioDto) {
         return ResponseEntity.ok(usuarioService.update(userId, usuarioDto));
     }
 
+    @Operation(summary = "Ativar/Desativar usuario", description = "Ativa/Desativa o usuario por id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro")
+    })
     @PatchMapping("/{userId}")
     public ResponseEntity<Usuario> activateUsuario(@PathVariable Long userId, @Valid @RequestBody PatchUsuarioDto patchUsuarioDto) {
         if(patchUsuarioDto.ativo()) return ResponseEntity.ok(usuarioService.activate(userId));
@@ -55,6 +74,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.deActivate(userId));
     }
 
+    @Operation(summary = "Deletar usuario", description = "Deleta o usuario por id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro")
+    })
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUsuario(@PathVariable Long userId) {
         usuarioService.delete(userId);

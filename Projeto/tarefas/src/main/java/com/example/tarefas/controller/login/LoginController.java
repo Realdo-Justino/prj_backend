@@ -3,6 +3,9 @@ package com.example.tarefas.controller.login;
 import com.example.tarefas.controller.login.dto.LoginDto;
 import com.example.tarefas.service.login.LoginService;
 import com.example.tarefas.service.usuario.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +21,11 @@ public class LoginController {
 
     public LoginController(LoginService loginService) { this.loginService = loginService; }
 
+    @Operation(summary = "Realizar Login", description = "Realiza o login do usuario")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro")
+    })
     @PostMapping
     public ResponseEntity<String> login(@Valid @RequestBody LoginDto loginDto) {
        loginService.validate(loginDto);
