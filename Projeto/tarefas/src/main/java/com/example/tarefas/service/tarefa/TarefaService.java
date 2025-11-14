@@ -13,6 +13,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 
 import java.time.LocalDate;
@@ -111,6 +114,37 @@ public class TarefaService {
             throw new BadRequestException("Você não tem permissão para deletar esta tarefa.");
         }
         tarefaRepository.deleteById(id);
+    }
+
+    public int importFromCsv(MultipartFile file) {
+        int count = 0;
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+
+            while ((line = br.readLine()) != null) {
+
+                String[] dados = line.split(",");
+
+                if (dados.length >= 3) {
+                    Long usuarioId = Long.parseLong(dados[2].trim());
+
+                    TarefaDto dto = new TarefaDto(
+                            dados[0].trim(),
+                            dados[1].trim(),
+                            usuarioId
+                    );
+
+
+                    create(dto);
+                    count++;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao processar CSV: " + e.getMessage());
+        }
+
+        return count;
     }
 
 }
