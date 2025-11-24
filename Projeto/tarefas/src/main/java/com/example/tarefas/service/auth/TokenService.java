@@ -6,6 +6,9 @@ import com.example.tarefas.model.RefreshToken;
 import com.example.tarefas.model.Usuario;
 import com.example.tarefas.repository.RefreshTokenRepository;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.oauth2.jose.jws.JwsAlgorithm;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import com.example.tarefas.service.usuario.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +49,10 @@ public class TokenService {
                 .expiresAt(now.plus(accessTokenExpirationMinutes, ChronoUnit.MINUTES))
                 .build();
 
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+
+        JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
     }
 
     public Jwt validateToken(String token) {
