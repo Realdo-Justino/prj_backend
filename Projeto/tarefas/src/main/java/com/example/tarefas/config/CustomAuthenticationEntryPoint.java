@@ -17,13 +17,15 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException {
+        String message = "Invalid Token";
+
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            message = "Token not informed";
+        }
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-
-        // Message for missing token
-        String msg = "{\"error\": \"Token not informed\"}";
-
-        response.getWriter().write(msg);
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 }

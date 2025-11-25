@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -25,6 +26,9 @@ public class JwtConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
         SecretKeySpec secretKey = new SecretKeySpec(jwtSecret.getBytes(), "HmacSHA256");
-        return NimbusJwtDecoder.withSecretKey(secretKey).build();
+        return NimbusJwtDecoder
+                .withSecretKey(secretKey)
+                .macAlgorithm(MacAlgorithm.HS256)  // ← REQUIRED
+                .build();
     }
 }

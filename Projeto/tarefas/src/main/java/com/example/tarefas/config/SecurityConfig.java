@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -21,6 +22,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(formLogin -> formLogin.disable())
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/auth/register").permitAll()
@@ -35,7 +39,12 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex ->
                         ex.authenticationEntryPoint(customEntryPoint)
-                );
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+        ;
 
         return http.build();
     }
