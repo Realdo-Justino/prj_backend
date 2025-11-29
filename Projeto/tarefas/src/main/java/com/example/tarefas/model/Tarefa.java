@@ -1,11 +1,13 @@
 package com.example.tarefas.model;
 
+import com.example.tarefas.enums.Urgencia;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 @Entity
 @Data
@@ -26,5 +28,7 @@ public class Tarefa {
     private String titulo = "";
     private String descricao = "";
     private Boolean concluido;
-
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Urgencia urgencia;
 }
