@@ -5,16 +5,19 @@ import com.example.tarefas.controller.usuario.dto.UsuarioDto;
 import com.example.tarefas.model.Usuario;
 import com.example.tarefas.service.usuario.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -34,6 +37,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "200", description = "Usuarios"),
     })
     @GetMapping
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<List<Usuario>> getAllUsuarios() {
         return ResponseEntity.ok(usuarioService.findAll());
     }
@@ -147,5 +151,41 @@ public class UsuarioController {
         usuarioService.delete(userId);
 
         return ResponseEntity.ok().body("Deletado com sucesso");
+    }
+
+    @Operation(summary = "Importar usuarios", description = "Importa usuarios por um arquivo CSV")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Sucesso",
+                    content = @Content(
+                            mediaType = "text/plain",
+                            schema = @Schema(type = "string", example = "X usuarios importados com sucesso")
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Erro",
+                    content = @Content(
+                            mediaType = "text/plain",
+                            schema = @Schema(type = "string", example = "Falha ao importar o CSV: XXX")
+                    )
+            )
+    })
+    @PostMapping(value = "/import", consumes = "multipart/form-data")
+    public ResponseEntity<String> importTasks(
+        @Parameter(description = "CSV file to import", required = true)
+        @RequestParam("file") MultipartFile file) {
+
+        try {
+            if (file.isEmpty() || !file.getOriginalFilename().endsWith(".csv")) {
+                return ResponseEntity.badRequest().body("Arquivo invalido. Envie um CSV");
+            }
+
+            int imported = usuarioService.importFromCsv(file);
+            return ResponseEntity.ok(imported + " usuarios importados com sucesso");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Falha ao importar o CSV: " + e.getMessage());
+        }
     }
 }

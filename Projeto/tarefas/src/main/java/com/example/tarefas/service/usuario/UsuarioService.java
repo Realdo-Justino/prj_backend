@@ -8,8 +8,13 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,5 +119,34 @@ public class UsuarioService {
         findById(id);
 
         usuarioRepository.deleteById(id);
+    }
+
+    public int importFromCsv(MultipartFile file) throws IOException {
+        List<Usuario> users = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            boolean headerSkipped = false;
+
+            while ((line = reader.readLine()) != null) {
+                if (!headerSkipped) { headerSkipped = true; continue; } // skip header
+                String[] columns = line.split(",");
+                if (columns.length >= 5) {
+                    Usuario user = new Usuario();
+                    user.setNome(columns[0].trim());
+                    user.setSobrenome(columns[1].trim());
+                    user.setSenha(columns[2].trim());
+                    user.setEmail(columns[3].trim());
+                    user.setDataCriacao(LocalDate.now());
+                    user.setAtivo(columns[4].trim().equalsIgnoreCase("true"));
+
+                    users.add(user);
+                }
+            }
+        }
+
+        usuarioRepository.saveAll(users);
+
+        return users.size();
     }
 }
