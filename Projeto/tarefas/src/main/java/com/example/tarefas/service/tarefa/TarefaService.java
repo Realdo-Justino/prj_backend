@@ -10,6 +10,8 @@ import com.example.tarefas.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,22 +28,37 @@ public class TarefaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    private Usuario getUsuarioLogado() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email;
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();
+        } else {
+            email = principal.toString();
+        }
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado"));
+    }
+
     @Transactional
     public List<Tarefa> findAll() {
-        return tarefaRepository.findAll();
+        Usuario usuario = getUsuarioLogado();
+        return tarefaRepository.findByUsuarioCriado(usuario);
     }
 
     @Transactional
     public Tarefa findById(long id) {
-        return tarefaRepository.findById(id)
+        Usuario usuario = getUsuarioLogado();
+        Tarefa tarefa = tarefaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
+        if (!tarefa.getUsuario_criado().getId().equals(usuario.getId())) {
+            throw new BadRequestException("Você não tem permissão para acessar esta tarefa.");
+        }
+        return tarefa;
     }
 
-
     public Tarefa create(TarefaDto tarefaDto) {
-        Usuario usuario = usuarioRepository.findById(tarefaDto.usuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
+        Usuario usuario = getUsuarioLogado();
         Tarefa tarefa = Tarefa.builder()
                 .titulo(tarefaDto.titulo())
                 .descricao(tarefaDto.descricao())
@@ -49,94 +66,61 @@ public class TarefaService {
                 .urgencia(tarefaDto.urgencia())
                 .concluido(false)
                 .build();
-
         return tarefaRepository.save(tarefa);
     }
 
-
-    public Tarefa update(Long id, TarefaDto tarefaDto, Long usuarioId) {
+    public Tarefa update(Long id, TarefaDto tarefaDto) {
         Tarefa existente = findById(id);
-
-        if (!existente.getUsuario_criado().getId().equals(usuarioId)) {
-            throw new BadRequestException("Você não tem permissão para alterar esta tarefa.");
-        }
-
         existente.setTitulo(tarefaDto.titulo());
         existente.setDescricao(tarefaDto.descricao());
         existente.setUrgencia(tarefaDto.urgencia());
-
         return tarefaRepository.save(existente);
     }
 
-
-    public Tarefa concluirTarefa(Long id, Long usuarioId) {
+    public Tarefa concluirTarefa(Long id) {
         Tarefa tarefa = findById(id);
-
-        if (!tarefa.getUsuario_criado().getId().equals(usuarioId)) {
-            throw new BadRequestException("Você não tem permissão para concluir esta tarefa.");
-        }
-
         tarefa.setConcluido(true);
         return tarefaRepository.save(tarefa);
     }
 
-
-    public Tarefa pendenteTarefa(Long id, Long usuarioId) {
+    public Tarefa pendenteTarefa(Long id) {
         Tarefa tarefa = findById(id);
-
-        if (!tarefa.getUsuario_criado().getId().equals(usuarioId)) {
-            throw new BadRequestException("Você não tem permissão para alterar esta tarefa.");
-        }
-
         tarefa.setConcluido(false);
         return tarefaRepository.save(tarefa);
     }
 
-    public void delete(Long id, Long usuarioId) {
-        Tarefa existente = findById(id);
-
-        if (!existente.getUsuario_criado().getId().equals(usuarioId)) {
-            throw new BadRequestException("Você não tem permissão para deletar esta tarefa.");
-        }
-
-        tarefaRepository.deleteById(id);
+    public void delete(Long id) {
+        Tarefa tarefa = findById(id);
+        tarefaRepository.delete(tarefa);
     }
-
 
     public List<Tarefa> findByUrgencia(String urgencia) {
+        Usuario usuario = getUsuarioLogado();
         Urgencia nivel = Urgencia.valueOf(urgencia.toUpperCase());
-        return tarefaRepository.findByUrgencia(nivel);
+        return tarefaRepository.findByUsuarioCriadoAndUrgencia(usuario, nivel);
     }
-
 
     public int importFromCsv(MultipartFile file) {
         int count = 0;
-
+        Usuario usuarioLogado = getUsuarioLogado();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
-
             while ((line = br.readLine()) != null) {
                 String[] dados = line.split(",");
-
-                if (dados.length >= 3) {
-                    Long usuarioId = Long.parseLong(dados[2].trim());
-
+                if (dados.length >= 2) {
                     Urgencia urgencia = Urgencia.MEDIA;
-                    if (dados.length >= 4) {
+                    if (dados.length >= 3) {
                         try {
-                            urgencia = Urgencia.valueOf(dados[3].trim().toUpperCase());
+                            urgencia = Urgencia.valueOf(dados[2].trim().toUpperCase());
                         } catch (Exception ignored) {}
                     }
-
                     Tarefa tarefa = Tarefa.builder()
                             .titulo(dados[0].trim())
                             .descricao(dados[1].trim())
-                            .usuario_criado(usuarioRepository.findById(usuarioId)
-                                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado")))
+                            .usuario_criado(usuarioLogado)
                             .urgencia(urgencia)
                             .concluido(false)
                             .build();
-
                     tarefaRepository.save(tarefa);
                     count++;
                 }
@@ -144,7 +128,6 @@ public class TarefaService {
         } catch (Exception e) {
             throw new RuntimeException("Erro ao processar CSV: " + e.getMessage());
         }
-
         return count;
     }
 }

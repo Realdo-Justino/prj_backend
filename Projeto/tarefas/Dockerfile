@@ -8,7 +8,7 @@ RUN mvn -q -e -B dependency:go-offline
 COPY src ./src
 RUN mvn -q -e -B package -DskipTests
 
-# Etapa 2 - Executar o Jar
+
 FROM eclipse-temurin:21-jdk
 WORKDIR /app
 

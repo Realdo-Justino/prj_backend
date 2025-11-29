@@ -28,13 +28,11 @@ public class TarefaController {
         this.tarefaService = tarefaService;
     }
 
-
-    @Operation(summary = "Listar todas as tarefas")
+    @Operation(summary = "Listar todas as tarefas do usuário logado")
     @GetMapping
     public ResponseEntity<List<Tarefa>> getAllTarefas() {
         return ResponseEntity.ok(tarefaService.findAll());
     }
-
 
     @Operation(
             summary = "Buscar tarefa pelo ID",
@@ -50,7 +48,6 @@ public class TarefaController {
         return ResponseEntity.ok(tarefaService.findById(id));
     }
 
-
     @Operation(
             summary = "Criar nova tarefa",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -62,7 +59,6 @@ public class TarefaController {
                             {
                               "titulo": "Pagar boletos",
                               "descricao": "Pagar até 10/12",
-                              "usuarioId": 1,
                               "urgencia": "ALTA"
                             }
                             """)
@@ -74,57 +70,43 @@ public class TarefaController {
         return ResponseEntity.ok(tarefaService.create(tarefaDto));
     }
 
-
     @Operation(summary = "Atualizar tarefa existente")
     @PutMapping("/{id}")
     public ResponseEntity<Tarefa> updateTarefa(
             @Parameter(description = "ID da tarefa") @PathVariable Long id,
-            @Valid @RequestBody TarefaDto tarefaDto,
-            @Parameter(description = "ID do usuário dono da tarefa") @RequestParam Long usuarioId
+            @Valid @RequestBody TarefaDto tarefaDto
     ) {
-        return ResponseEntity.ok(tarefaService.update(id, tarefaDto, usuarioId));
+        return ResponseEntity.ok(tarefaService.update(id, tarefaDto));
     }
-
 
     @Operation(summary = "Marcar tarefa como concluída")
     @PatchMapping("/{id}/concluir")
     public ResponseEntity<Tarefa> concluirTarefa(
-            @Parameter(description = "ID da tarefa") @PathVariable Long id,
-            @Parameter(description = "ID do usuário dono da tarefa") @RequestParam Long usuarioId
+            @Parameter(description = "ID da tarefa") @PathVariable Long id
     ) {
-        return ResponseEntity.ok(tarefaService.concluirTarefa(id, usuarioId));
+        return ResponseEntity.ok(tarefaService.concluirTarefa(id));
     }
-
 
     @Operation(summary = "Marcar tarefa como pendente")
     @PatchMapping("/{id}/pendente")
     public ResponseEntity<Tarefa> pendenteTarefa(
-            @Parameter(description = "ID da tarefa") @PathVariable Long id,
-            @Parameter(description = "ID do usuário dono da tarefa") @RequestParam Long usuarioId
+            @Parameter(description = "ID da tarefa") @PathVariable Long id
     ) {
-        return ResponseEntity.ok(tarefaService.pendenteTarefa(id, usuarioId));
+        return ResponseEntity.ok(tarefaService.pendenteTarefa(id));
     }
 
-
-    @Operation(
-            summary = "Excluir tarefa definitivamente",
-            parameters = {
-                    @Parameter(name = "usuarioId", description = "ID do usuário dono")
-            }
-    )
+    @Operation(summary = "Excluir tarefa definitivamente")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTarefa(
-            @Parameter(description = "ID da tarefa") @PathVariable Long id,
-            @RequestParam Long usuarioId) {
-
-        tarefaService.delete(id, usuarioId);
+            @Parameter(description = "ID da tarefa") @PathVariable Long id
+    ) {
+        tarefaService.delete(id);
         return ResponseEntity.ok("Tarefa deletada com sucesso");
     }
 
-
     @Operation(
             summary = "Importar tarefas via arquivo CSV",
-            description = "Formato esperado: titulo,descricao,usuarioId,urgencia"
+            description = "Formato esperado: titulo,descricao,urgencia"
     )
     @PostMapping(value = "/import", consumes = "multipart/form-data")
     public ResponseEntity<String> importTarefas(
@@ -141,17 +123,14 @@ public class TarefaController {
         }
     }
 
-
-    @Operation(summary = "Buscar tarefas por nível de urgência")
+    @Operation(summary = "Buscar tarefas por nível de urgência do usuário logado")
     @GetMapping("/urgencia/{urgencia}")
     public ResponseEntity<List<Tarefa>> getByUrgencia(
+            @Parameter(description = "Nível de urgência", example = "ALTA")
             @PathVariable String urgencia
     ) {
         return ResponseEntity.ok(tarefaService.findByUrgencia(urgencia));
     }
-
 }
-
-
 
 
