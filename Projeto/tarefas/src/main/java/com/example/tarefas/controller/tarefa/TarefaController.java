@@ -9,14 +9,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 
 import java.util.List;
 
@@ -31,154 +28,130 @@ public class TarefaController {
         this.tarefaService = tarefaService;
     }
 
-    @Operation(summary = "Listar todas as tarefas", description = "Retorna uma lista com todas as tarefas cadastradas")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de tarefas retornada com sucesso")
-    })
+
+    @Operation(summary = "Listar todas as tarefas")
     @GetMapping
     public ResponseEntity<List<Tarefa>> getAllTarefas() {
         return ResponseEntity.ok(tarefaService.findAll());
     }
 
-    @Operation(summary = "Buscar tarefas por ID", description = "Retorna uma tarefa específica pelo seu ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Tarefa encontrada"),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Erro - Tarefa não encontrada",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(value = "{ \"error\": \"Tarefa não encontrada\" }")
-                    )
-            )
-    })
+
+    @Operation(
+            summary = "Buscar tarefa pelo ID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Tarefa encontrada"),
+                    @ApiResponse(responseCode = "404", description = "Tarefa não encontrada")
+            }
+    )
     @GetMapping("/{id}")
-    public ResponseEntity<Tarefa> getTarefaById(@PathVariable Long id) {
+    public ResponseEntity<Tarefa> getTarefaById(
+            @Parameter(description = "ID da tarefa", example = "1")
+            @PathVariable Long id) {
         return ResponseEntity.ok(tarefaService.findById(id));
     }
 
-    @Operation(summary = "Criar tarefas", description = "Cria uma nova tarefa no sistema")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Tarefa criada com sucesso"),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Erro na criação da tarefa",
+
+    @Operation(
+            summary = "Criar nova tarefa",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Dados da tarefa",
+                    required = true,
                     content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(value = "{ \"error\": \"Usuário não encontrado ou dados inválidos\" }")
+                            schema = @Schema(implementation = TarefaDto.class),
+                            examples = @ExampleObject(value = """
+                            {
+                              "titulo": "Pagar boletos",
+                              "descricao": "Pagar até 10/12",
+                              "usuarioId": 1,
+                              "urgencia": "ALTA"
+                            }
+                            """)
                     )
             )
-    })
+    )
     @PostMapping
     public ResponseEntity<Tarefa> createTarefa(@Valid @RequestBody TarefaDto tarefaDto) {
         return ResponseEntity.ok(tarefaService.create(tarefaDto));
     }
 
-    @Operation(summary = "Atualizar tarefas", description = "Atualiza os dados de uma tarefa existente")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Tarefa atualizada com sucesso"),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Erro ao atualizar tarefa",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(value = "{ \"error\": \"Você não tem permissão para atualizar esta tarefa\" }")
-                    )
-            )
-    })
+
+    @Operation(summary = "Atualizar tarefa existente")
     @PutMapping("/{id}")
     public ResponseEntity<Tarefa> updateTarefa(
-            @PathVariable Long id,
+            @Parameter(description = "ID da tarefa") @PathVariable Long id,
             @Valid @RequestBody TarefaDto tarefaDto,
-            @RequestParam Long usuarioId) {
+            @Parameter(description = "ID do usuário dono da tarefa") @RequestParam Long usuarioId
+    ) {
         return ResponseEntity.ok(tarefaService.update(id, tarefaDto, usuarioId));
     }
 
-    @Operation(summary = "Concluir tarefas", description = "Marca uma tarefa como concluída")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Tarefa marcada como concluída com sucesso"),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Erro ao concluir tarefa",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(value = "{ \"error\": \"Você não tem permissão para alterar esta tarefa\" }")
-                    )
-            )
-    })
+
+    @Operation(summary = "Marcar tarefa como concluída")
     @PatchMapping("/{id}/concluir")
     public ResponseEntity<Tarefa> concluirTarefa(
-            @PathVariable Long id,
-            @RequestParam Long usuarioId) {
+            @Parameter(description = "ID da tarefa") @PathVariable Long id,
+            @Parameter(description = "ID do usuário dono da tarefa") @RequestParam Long usuarioId
+    ) {
         return ResponseEntity.ok(tarefaService.concluirTarefa(id, usuarioId));
     }
 
-    @Operation(summary = "Marcar tarefas como pendente", description = "Define o status da tarefa como pendente (não concluída)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Tarefa marcada como pendente com sucesso"),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Erro ao alterar status da tarefa",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(value = "{ \"error\": \"Você não tem permissão para alterar esta tarefa\" }")
-                    )
-            )
-    })
+
+    @Operation(summary = "Marcar tarefa como pendente")
     @PatchMapping("/{id}/pendente")
     public ResponseEntity<Tarefa> pendenteTarefa(
-            @PathVariable Long id,
-            @RequestParam Long usuarioId) {
+            @Parameter(description = "ID da tarefa") @PathVariable Long id,
+            @Parameter(description = "ID do usuário dono da tarefa") @RequestParam Long usuarioId
+    ) {
         return ResponseEntity.ok(tarefaService.pendenteTarefa(id, usuarioId));
     }
 
-    @Operation(summary = "Deletar tarefas", description = "Remove uma tarefa do sistema")
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Tarefa deletada com sucesso",
-                    content = @Content(
-                            mediaType = "text/plain",
-                            schema = @Schema(type = "string", example = "Tarefa deletada com sucesso")
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Erro ao deletar tarefa",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(value = "{ \"error\": \"Você não tem permissão para deletar esta tarefa\" }")
-                    )
-            )
-    })
+
+    @Operation(
+            summary = "Excluir tarefa definitivamente",
+            parameters = {
+                    @Parameter(name = "usuarioId", description = "ID do usuário dono")
+            }
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTarefa(
-            @PathVariable Long id,
+            @Parameter(description = "ID da tarefa") @PathVariable Long id,
             @RequestParam Long usuarioId) {
+
         tarefaService.delete(id, usuarioId);
         return ResponseEntity.ok("Tarefa deletada com sucesso");
     }
+
+
+    @Operation(
+            summary = "Importar tarefas via arquivo CSV",
+            description = "Formato esperado: titulo,descricao,usuarioId,urgencia"
+    )
     @PostMapping(value = "/import", consumes = "multipart/form-data")
     public ResponseEntity<String> importTarefas(
-            @Parameter(description = "Arquivo CSV para importar tarefas", required = true)
-            @RequestParam("file") MultipartFile file) {
-
+            @Parameter(description = "Arquivo CSV") @RequestParam("file") MultipartFile file
+    ) {
         try {
             if (file.isEmpty() || !file.getOriginalFilename().endsWith(".csv")) {
-                return ResponseEntity.badRequest().body("Arquivo inválido. Envie um CSV");
+                return ResponseEntity.badRequest().body("Envie um arquivo CSV válido!");
             }
-
             int imported = tarefaService.importFromCsv(file);
             return ResponseEntity.ok(imported + " tarefas importadas com sucesso");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Falha ao importar o CSV: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Erro ao importar arquivo: " + e.getMessage());
         }
     }
 
+
+    @Operation(summary = "Buscar tarefas por nível de urgência")
+    @GetMapping("/urgencia/{urgencia}")
+    public ResponseEntity<List<Tarefa>> getByUrgencia(
+            @PathVariable String urgencia
+    ) {
+        return ResponseEntity.ok(tarefaService.findByUrgencia(urgencia));
+    }
+
 }
+
+
+
+
