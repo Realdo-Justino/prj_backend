@@ -1,6 +1,6 @@
 package com.example.tarefas.service.historico;
 
-import com.example.tarefas.model.Historico;
+import com.example.tarefas.model.HistoricoTarefa;
 import com.example.tarefas.model.Tarefa;
 import com.example.tarefas.repository.HistoricoRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,26 +16,28 @@ public class HistoricoService {
     private final HistoricoRepository historicoRepository;
 
     public void registrarCriacao(Tarefa tarefa) {
-        Historico historico = Historico.builder()
+        HistoricoTarefa historico = HistoricoTarefa.builder()
                 .tarefa(tarefa)
-                .dataCriacao(LocalDateTime.now())
+                .acao("CRIACAO")
+                .dataHora(LocalDateTime.now())
                 .build();
 
         historicoRepository.save(historico);
     }
 
-    public void registrarFinalizacao(Tarefa tarefa) {
-        List<Historico> lista = historicoRepository.findByTarefaId(tarefa.getId());
+    public void registrarAcao(Tarefa tarefa, String acao, String descricao) {
+        HistoricoTarefa historico = HistoricoTarefa.builder()
+                .tarefa(tarefa)
+                .usuario(tarefa.getUsuario())
+                .acao(acao)
+                .descricao(descricao)
+                .dataHora(LocalDateTime.now())
+                .build();
 
-        if (lista.isEmpty()) return;
-
-        Historico ultimo = lista.get(lista.size() - 1);
-        ultimo.setDataFinalizacao(LocalDateTime.now());
-
-        historicoRepository.save(ultimo);
+        historicoRepository.save(historico);
     }
 
-    public List<Historico> listarPorTarefa(Long idTarefa) {
+    public List<HistoricoTarefa> listarPorTarefa(Long idTarefa) {
         return historicoRepository.findByTarefaId(idTarefa);
     }
 }

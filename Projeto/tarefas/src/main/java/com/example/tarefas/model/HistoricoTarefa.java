@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "historico_tarefa")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

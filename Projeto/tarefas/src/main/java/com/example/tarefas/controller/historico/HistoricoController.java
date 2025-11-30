@@ -3,6 +3,9 @@ package com.example.tarefas.controller.historico;
 import com.example.tarefas.controller.historico.dto.HistoricoResponseDto;
 import com.example.tarefas.service.historico.HistoricoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +21,22 @@ public class HistoricoController {
 
     private final HistoricoService historicoService;
 
-    @Operation(summary = "Lista todo o histórico de uma tarefa")
-    @GetMapping("/tarefa/{id}")
-    public ResponseEntity<List<HistoricoResponseDto>> listar(@PathVariable Long id) {
-
-        List<HistoricoResponseDto> resposta = historicoService.listarPorTarefa(id)
+    @Operation(summary = "Listar histórico de uma tarefa")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Lista retornada",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = HistoricoResponseDto.class)
+            )
+    )
+    @GetMapping("/{idTarefa}")
+    public ResponseEntity<List<HistoricoResponseDto>> listar(@PathVariable Long idTarefa) {
+        var lista = historicoService.listarPorTarefa(idTarefa)
                 .stream()
                 .map(HistoricoResponseDto::new)
                 .toList();
 
-        return ResponseEntity.ok(resposta);
+        return ResponseEntity.ok(lista);
     }
 }
