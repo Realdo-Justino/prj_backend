@@ -28,10 +28,7 @@ public class HistoricoTarefa {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    private String acao;
-
-    private String descricao = "";
-
     private LocalDateTime dataCriacao;
+
     private LocalDateTime dataFinalizacao;
 }

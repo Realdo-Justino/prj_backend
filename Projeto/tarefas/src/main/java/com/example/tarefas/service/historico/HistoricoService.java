@@ -2,8 +2,11 @@ package com.example.tarefas.service.historico;
 
 import com.example.tarefas.model.HistoricoTarefa;
 import com.example.tarefas.model.Tarefa;
+import com.example.tarefas.model.Usuario;
 import com.example.tarefas.repository.HistoricoRepository;
+import com.example.tarefas.service.usuario.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,10 +18,14 @@ public class HistoricoService {
 
     private final HistoricoRepository historicoRepository;
 
+    @Autowired
+    private final UsuarioService usuarioService;
+
     public void registrarCriacao(Tarefa tarefa) {
+        //Usuario usuario = usuarioService.findByEmail();
+
         HistoricoTarefa historico = HistoricoTarefa.builder()
                 .tarefa(tarefa)
-                .acao("CRIACAO")
                 .dataCriacao(LocalDateTime.now())
                 .build();
 
@@ -29,9 +36,7 @@ public class HistoricoService {
         HistoricoTarefa historico = HistoricoTarefa.builder()
                 .tarefa(tarefa)
                 .usuario(tarefa.getUsuarioCriado())
-                .acao(acao)
-                .descricao(descricao)
-                .dataCriacao(LocalDateTime.now())
+                .dataFinalizacao(LocalDateTime.now())
                 .build();
 
         historicoRepository.save(historico);
