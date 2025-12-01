@@ -7,6 +7,8 @@ import com.example.tarefas.repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,6 +47,14 @@ public class UsuarioService {
         }
 
         throw new EntityNotFoundException("Usuario nao encontrado");
+    }
+
+    @Transactional
+    public Usuario getUsuarioLogado() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado"));
     }
 
     public Usuario create(UsuarioDto usuarioDto) {
