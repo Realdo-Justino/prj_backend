@@ -49,7 +49,7 @@ public class HistoricoService {
     }
 
     public HistoricoTarefa registrarCriacao(HistoricoDto historicoDto) {
-        Usuario usuario = usuarioService.findById(historicoDto.idUsuario());
+        Usuario usuario = usuarioService.getUsuarioLogado();
         Tarefa tarefa = tarefaService.findById(historicoDto.idTarefa());
 
         HistoricoTarefa historico = HistoricoTarefa.builder()

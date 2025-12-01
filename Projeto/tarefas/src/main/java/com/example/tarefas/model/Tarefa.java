@@ -19,15 +19,15 @@ public class Tarefa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Integer categoria;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuarioCriado;
 
-    private Integer categoria;
-
     private String titulo = "";
     private String descricao = "";
-    private Boolean concluido;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Urgencia urgencia;
