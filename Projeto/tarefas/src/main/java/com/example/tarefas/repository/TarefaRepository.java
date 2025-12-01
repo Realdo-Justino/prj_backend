@@ -12,10 +12,10 @@ import java.util.List;
 public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
 
     List<Tarefa> findByUrgencia(Urgencia urgencia);
-    @Query("SELECT t FROM Tarefa t WHERE t.usuario_criado = :usuario")
+    @Query("SELECT t FROM Tarefa t WHERE t.usuarioCriado = :usuario")
     List<Tarefa> findByUsuarioCriado(@Param("usuario") Usuario usuario);
 
-    @Query("SELECT t FROM Tarefa t WHERE t.usuario_criado = :usuario AND t.urgencia = :urgencia")
+    @Query("SELECT t FROM Tarefa t WHERE t.usuarioCriado = :usuario AND t.urgencia = :urgencia")
     List<Tarefa> findByUsuarioCriadoAndUrgencia(@Param("usuario") Usuario usuario, @Param("urgencia") Urgencia urgencia);
 
 

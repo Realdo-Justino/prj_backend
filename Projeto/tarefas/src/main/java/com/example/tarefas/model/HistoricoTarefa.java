@@ -1,34 +1,34 @@
 package com.example.tarefas.model;
 
-import com.example.tarefas.enums.Urgencia;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "historico_tarefa")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Tarefa {
+public class HistoricoTarefa {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "tarefa_id")
+    private Tarefa tarefa;
+
+    @ManyToOne
     @JoinColumn(name = "usuario_id")
-    private Usuario usuarioCriado;
+    private Usuario usuario;
 
-    private Integer categoria;
+    private LocalDateTime dataCriacao;
 
-    private String titulo = "";
-    private String descricao = "";
-    private Boolean concluido;
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Urgencia urgencia;
+    private LocalDateTime dataFinalizacao;
 }
