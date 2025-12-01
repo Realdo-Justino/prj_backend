@@ -51,7 +51,7 @@ public class TarefaService {
         Usuario usuario = getUsuarioLogado();
         Tarefa tarefa = tarefaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
-        if (!tarefa.getUsuario_criado().getId().equals(usuario.getId())) {
+        if (!tarefa.getUsuarioCriado().getId().equals(usuario.getId())) {
             throw new BadRequestException("Você não tem permissão para acessar esta tarefa.");
         }
         return tarefa;
@@ -62,7 +62,7 @@ public class TarefaService {
         Tarefa tarefa = Tarefa.builder()
                 .titulo(tarefaDto.titulo())
                 .descricao(tarefaDto.descricao())
-                .usuario_criado(usuario)
+                .usuarioCriado(usuario)
                 .urgencia(tarefaDto.urgencia())
                 .concluido(false)
                 .build();
@@ -117,7 +117,7 @@ public class TarefaService {
                     Tarefa tarefa = Tarefa.builder()
                             .titulo(dados[0].trim())
                             .descricao(dados[1].trim())
-                            .usuario_criado(usuarioLogado)
+                            .usuarioCriado(usuarioLogado)
                             .urgencia(urgencia)
                             .concluido(false)
                             .build();
