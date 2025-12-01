@@ -19,7 +19,7 @@ public class HistoricoService {
         HistoricoTarefa historico = HistoricoTarefa.builder()
                 .tarefa(tarefa)
                 .acao("CRIACAO")
-                .dataHora(LocalDateTime.now())
+                .dataCriacao(LocalDateTime.now())
                 .build();
 
         historicoRepository.save(historico);
@@ -28,10 +28,10 @@ public class HistoricoService {
     public void registrarAcao(Tarefa tarefa, String acao, String descricao) {
         HistoricoTarefa historico = HistoricoTarefa.builder()
                 .tarefa(tarefa)
-                .usuario(tarefa.getUsuario())
+                .usuario(tarefa.getUsuarioCriado())
                 .acao(acao)
                 .descricao(descricao)
-                .dataHora(LocalDateTime.now())
+                .dataCriacao(LocalDateTime.now())
                 .build();
 
         historicoRepository.save(historico);

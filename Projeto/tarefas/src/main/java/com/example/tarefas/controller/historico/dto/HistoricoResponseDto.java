@@ -15,7 +15,6 @@ public class HistoricoResponseDto {
     private Long idUsuario;
     private String acao;
     private String descricao;
-    private LocalDateTime dataHora;
 
     public HistoricoResponseDto(HistoricoTarefa historico) {
         this.id = historico.getId();
@@ -25,6 +24,5 @@ public class HistoricoResponseDto {
         this.idUsuario = historico.getUsuario().getId();
         this.acao = historico.getAcao();
         this.descricao = historico.getDescricao();
-        this.dataHora = historico.getDataHora();
     }
 }

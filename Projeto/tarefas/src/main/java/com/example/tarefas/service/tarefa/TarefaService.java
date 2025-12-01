@@ -56,7 +56,7 @@ public class TarefaService {
         Tarefa tarefa = Tarefa.builder()
                 .titulo(tarefaDto.titulo())
                 .descricao(tarefaDto.descricao())
-                .usuario_criado(usuario)
+                .usuarioCriado(usuario)
                 .concluido(false)
                 .build();
 
@@ -66,7 +66,7 @@ public class TarefaService {
     public Tarefa update(Long id, TarefaDto tarefaDto, Long usuarioId) {
         Tarefa tarefaExistente = findById(id);
 
-        if (!tarefaExistente.getUsuario_criado().getId().equals(tarefaDto.usuarioId())) {
+        if (!tarefaExistente.getUsuarioCriado().getId().equals(tarefaDto.usuarioId())) {
             throw new BadRequestException("Você não tem permissão para alterar esta tarefa.");
         }
 
@@ -78,7 +78,7 @@ public class TarefaService {
                 .id(tarefaExistente.getId())
                 .titulo(tarefaDto.titulo())
                 .descricao(tarefaDto.descricao())
-                .usuario_criado(usuario)
+                .usuarioCriado(usuario)
                 .build();
 
         return tarefaRepository.save(tarefaAtualizada);
@@ -87,7 +87,7 @@ public class TarefaService {
     public Tarefa concluirTarefa(Long id, Long usuarioId) {
         Tarefa tarefa = findById(id);
 
-        if (!tarefa.getUsuario_criado().getId().equals(usuarioId)) {
+        if (!tarefa.getUsuarioCriado().getId().equals(usuarioId)) {
             throw new BadRequestException("Você não tem permissão para concluir esta tarefa.");
         }
 
@@ -98,7 +98,7 @@ public class TarefaService {
     public Tarefa pendenteTarefa(Long id, Long usuarioId) {
         Tarefa tarefa = findById(id);
 
-        if (!tarefa.getUsuario_criado().getId().equals(usuarioId)) {
+        if (!tarefa.getUsuarioCriado().getId().equals(usuarioId)) {
             throw new BadRequestException("Você não tem permissão para alterar esta tarefa.");
         }
 
@@ -110,7 +110,7 @@ public class TarefaService {
 
     public void delete(Long id, Long usuarioId) {
         Tarefa tarefaExistente = findById(id);
-        if (!tarefaExistente.getUsuario_criado().getId().equals(usuarioId)) {
+        if (!tarefaExistente.getUsuarioCriado().getId().equals(usuarioId)) {
             throw new BadRequestException("Você não tem permissão para deletar esta tarefa.");
         }
         tarefaRepository.deleteById(id);

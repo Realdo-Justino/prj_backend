@@ -19,7 +19,7 @@ public class Tarefa {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
-    private Usuario usuario_criado;
+    private Usuario usuarioCriado;
 
     private Integer categoria;
 

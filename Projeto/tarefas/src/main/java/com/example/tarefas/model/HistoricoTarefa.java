@@ -32,5 +32,6 @@ public class HistoricoTarefa {
 
     private String descricao = "";
 
-    private LocalDateTime dataHora;
+    private LocalDateTime dataCriacao;
+    private LocalDateTime dataFinalizacao;
 }

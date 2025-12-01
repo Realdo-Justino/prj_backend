@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +23,16 @@ public class HistoricoController {
     private final HistoricoService historicoService;
 
     @Operation(summary = "Listar histórico de uma tarefa")
-    @ApiResponse(
-            responseCode = "200",
-            description = "Lista retornada",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = HistoricoResponseDto.class)
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista retornada",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = HistoricoResponseDto.class)
+                    )
             )
-    )
+    })
     @GetMapping("/{idTarefa}")
     public ResponseEntity<List<HistoricoResponseDto>> listar(@PathVariable Long idTarefa) {
         var lista = historicoService.listarPorTarefa(idTarefa)
