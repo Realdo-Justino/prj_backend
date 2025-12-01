@@ -1,6 +1,7 @@
 package com.example.tarefas.service.historico;
 
 import com.example.tarefas.controller.historico.dto.HistoricoDto;
+import com.example.tarefas.exceptions.BadRequestException;
 import com.example.tarefas.model.HistoricoTarefa;
 import com.example.tarefas.model.Tarefa;
 import com.example.tarefas.model.Usuario;
@@ -55,6 +56,23 @@ public class HistoricoService {
                 .tarefa(tarefa)
                 .usuario(usuario)
                 .dataCriacao(LocalDateTime.now())
+                .build();
+
+        return historicoRepository.save(historico);
+    }
+
+    public HistoricoTarefa registrarFinalizacao(Long idHistorico, Long idUsuario) {
+        HistoricoTarefa historico = findById(idHistorico);
+
+        if (!historico.getUsuario().getId().equals(idUsuario)) {
+            throw new BadRequestException("Você não tem permissão para alterar esta tarefa.");
+        }
+
+        HistoricoTarefa historicoAtualizado = HistoricoTarefa.builder()
+                .tarefa(historico.getTarefa())
+                .usuario(historico.getUsuario())
+                .dataCriacao(historico.getDataCriacao())
+                .dataFinalizacao(LocalDateTime.now())
                 .build();
 
         return historicoRepository.save(historico);
