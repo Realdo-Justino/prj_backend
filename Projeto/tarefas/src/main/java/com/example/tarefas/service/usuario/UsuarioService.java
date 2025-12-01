@@ -51,13 +51,8 @@ public class UsuarioService {
 
     @Transactional
     public Usuario getUsuarioLogado() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email;
-        if (principal instanceof UserDetails) {
-            email = ((UserDetails) principal).getUsername();
-        } else {
-            email = principal.toString();
-        }
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuário logado não encontrado"));
     }

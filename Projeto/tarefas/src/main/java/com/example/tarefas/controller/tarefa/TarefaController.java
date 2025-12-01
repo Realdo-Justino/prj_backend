@@ -79,22 +79,6 @@ public class TarefaController {
         return ResponseEntity.ok(tarefaService.update(id, tarefaDto));
     }
 
-    @Operation(summary = "Marcar tarefa como concluída")
-    @PatchMapping("/{id}/concluir")
-    public ResponseEntity<Tarefa> concluirTarefa(
-            @Parameter(description = "ID da tarefa") @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(tarefaService.concluirTarefa(id));
-    }
-
-    @Operation(summary = "Marcar tarefa como pendente")
-    @PatchMapping("/{id}/pendente")
-    public ResponseEntity<Tarefa> pendenteTarefa(
-            @Parameter(description = "ID da tarefa") @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(tarefaService.pendenteTarefa(id));
-    }
-
     @Operation(summary = "Excluir tarefa definitivamente")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTarefa(
@@ -123,6 +107,7 @@ public class TarefaController {
         }
     }
 
+/*
     @Operation(summary = "Buscar tarefas por nível de urgência do usuário logado")
     @GetMapping("/urgencia/{urgencia}")
     public ResponseEntity<List<Tarefa>> getByUrgencia(
@@ -131,6 +116,7 @@ public class TarefaController {
     ) {
         return ResponseEntity.ok(tarefaService.findByUrgencia(urgencia));
     }
+*/
 }
 
 

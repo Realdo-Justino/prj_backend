@@ -18,11 +18,6 @@ public record TarefaDto(
                 example = "Preparar o relatório com métricas de produtividade")
         String descricao,
 
-        @Schema(description = "Identificador do usuário responsável pela tarefa",
-                example = "3")
-        @NotNull(message = "O usuário é obrigatório")
-        Long usuarioId,
-
         @Schema(description = "Nivel de urgência da tarefa",
                 example = "ALTA",
                 allowableValues = {"BAIXA", "MEDIA", "ALTA"})

@@ -75,7 +75,7 @@ public class TarefaService {
 
     public int importFromCsv(MultipartFile file) {
         int count = 0;
-        Usuario usuarioLogado = usuarioRepository.getUsuarioLogado();
+        Usuario usuarioLogado = usuarioService.getUsuarioLogado();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
             while ((line = br.readLine()) != null) {

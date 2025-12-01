@@ -61,19 +61,15 @@ public class HistoricoService {
         return historicoRepository.save(historico);
     }
 
-    public HistoricoTarefa registrarFinalizacao(Long idHistorico, Long idUsuario) {
+    public HistoricoTarefa registrarFinalizacao(Long idHistorico) {
+        Usuario usuario = usuarioService.getUsuarioLogado();
         HistoricoTarefa historico = findById(idHistorico);
 
-        if (!historico.getUsuario().getId().equals(idUsuario)) {
+        if (!historico.getUsuario().getId().equals(usuario.getId())) {
             throw new BadRequestException("Você não tem permissão para alterar esta tarefa.");
         }
 
-        HistoricoTarefa historicoAtualizado = HistoricoTarefa.builder()
-                .tarefa(historico.getTarefa())
-                .usuario(historico.getUsuario())
-                .dataCriacao(historico.getDataCriacao())
-                .dataFinalizacao(LocalDateTime.now())
-                .build();
+        historico.setDataFinalizacao(LocalDateTime.now());
 
         return historicoRepository.save(historico);
     }
